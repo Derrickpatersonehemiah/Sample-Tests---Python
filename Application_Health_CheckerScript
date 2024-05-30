@@ -1,0 +1,33 @@
+import requests
+import logging
+import time
+
+#logging
+logging.basicConfig(filename='application_health.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+#Application URL
+APPLICATION_URL = 'https://www.amazon.com'
+
+def check_application_health():
+    try:
+        response = requests.get(APPLICATION_URL)
+        if response.status_code == 200:
+            logging.info('Application is UP')
+            return 'UP'
+        else:
+            logging.warning(f'Application is DOWN - Status Code: {response.status_code}')
+            return 'DOWN'
+    except requests.RequestException as e:
+        logging.error(f'Error checking application health: {e}')
+        return 'DOWN'
+
+def monitor_application_health():
+    while True:
+        status = check_application_health()
+        logging.info(f'Application Status: {status}')
+        
+        time.sleep(120)  #sleep 2 mins before next check
+
+if __name__ == "__main__":
+    monitor_application_health()
